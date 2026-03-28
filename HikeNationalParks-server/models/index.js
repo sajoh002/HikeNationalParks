@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
-mongoose.set("dubug", true);
+mongoose.set("debug", true);
 mongoose.Promise = Promise;
-mongoose.connect("mongodb://localhost/hike", {
-  keepAlive: true,
-  useMongoClient: true,
-});
+mongoose.connect("mongodb://localhost/hike");
+
+module.exports.User = require("./user");
