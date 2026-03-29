@@ -33,17 +33,17 @@ const sightSchema = new mongoose.Schema(
     difficulty: String,
     description: String,
     author: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
     reviews: [
       {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Review",
       },
     ],
     nationalPark: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "NationalPark",
     },
   },
@@ -72,4 +72,4 @@ sightSchema.post("findOneAndDelete", async function (doc) {
 
 const Sight = mongoose.model("Sight", sightSchema);
 
-modules.exports = Sight;
+module.exports = Sight;
