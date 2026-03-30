@@ -7,6 +7,7 @@ const errorHandler = require("./handlers/error");
 const authRoutes = require("./routes/auth");
 const nationalParkRoutes = require("./routes/nationalParks");
 const sightRoutes = require("./routes/sights");
+const reviewRoutes = require("./routes/reviews");
 const PORT = 8081;
 
 app.use(cors());
@@ -16,6 +17,7 @@ app.use(bodyParser.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/nationalParks", nationalParkRoutes);
 app.use("/api/nationalParks/:id/sights", sightRoutes);
+app.use("/api/nationalParks/:id/sights/:sightId/reviews", reviewRoutes);
 
 // error handler if no routes reached
 app.use(function (req, res, next) {
