@@ -5,6 +5,7 @@ const { cloudinary } = require("../cloudinary");
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
+// POST /api/nationalParks/
 exports.createNationalPark = async function (req, res, next) {
   try {
     const geoData = await geocoder
@@ -13,7 +14,7 @@ exports.createNationalPark = async function (req, res, next) {
         limit: 1,
       })
       .send();
-    let nationalPark = new db.NationalPark(req.body.nationalPark);
+    const nationalPark = new db.NationalPark(req.body.nationalPark);
     nationalPark.geometry = geoData.body.features[0].geometry;
     nationalPark.images = req.files.map((f) => ({
       url: f.path,
@@ -21,11 +22,63 @@ exports.createNationalPark = async function (req, res, next) {
     }));
     nationalPark.author = req.user.id;
     await nationalPark.save();
-    let foundNationalPark = await db.NationalPark.findById(nationalPark.id);
+    const foundNationalPark = await db.NationalPark.findById(nationalPark.id);
     res.status(200).json({ foundNationalPark });
   } catch (err) {
     return next(err);
   }
 };
 
-exports.getNationalPark = async function (req, res, next) {};
+// GET /api/nationalParks
+exports.getAllNationalParks = async function (req, res, next) {
+  try {
+    const nationalParks = await db.NationalPark.find();
+    nationalParks.sort((a, b) => a.title.localeCompare(b.title));
+    return res.status(200).json(nationalParks);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// GET /api/nationalParks/:id
+exports.getNationalPark = async function (req, res, next) {
+  try {
+    const nationalPark = await db.NationalPark.find(req.params.id)
+      .populate("sights")
+      .populate("author");
+    return res.status(200).json(nationalPark);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// PUT /api/nationalParks/:id
+exports.updateNationalPark = async function (req, res, next) {
+  try {
+    const nationalPark = await db.NationalPark.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body.nationalParh,
+      },
+      { new: true }
+    );
+    const imgs = req.files.map((f) => ({
+      url: f.path,
+      filename: f.filename,
+    }));
+    nationalPark.images.push(...imgs);
+    await nationalPark.save();
+    if (req.body.deleteImages) {
+      for (let filename of req.body.deleteImages) {
+        await cloudinary.uploader.destroy(filename);
+      }
+      await nationalPark.updateOne({
+        $pull: { images: { filename: { $in: req.body.deleteImages } } },
+      });
+    }
+    const foundNationalPark = await db.NationalPark.findById(nationalPark.id);
+    return res.status(200).json(foundNationalPark);
+  } catch (err) {
+    return next(err);
+  }
+};

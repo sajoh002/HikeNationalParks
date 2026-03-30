@@ -1,4 +1,3 @@
-require("dotenv").load();
 const jwt = require("jsonwebtoken");
 const db = require("../models");
 

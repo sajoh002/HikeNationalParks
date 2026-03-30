@@ -6,8 +6,6 @@ const bodyParser = require("body-parser");
 const errorHandler = require("./handlers/error");
 const authRoutes = require("./routes/auth");
 const nationalParkRoutes = require("./routes/nationalParks");
-const { isLoggedIn } = require("./middleware/auth");
-
 const PORT = 8081;
 
 app.use(cors());
@@ -15,7 +13,7 @@ app.use(bodyParser.json());
 
 // routes
 app.use("/api/auth", authRoutes);
-app.use("/api/nationalParks", isLoggedIn, nationalParkRoutes);
+app.use("/api/nationalParks", nationalParkRoutes);
 
 // error handler if no routes reached
 app.use(function (req, res, next) {

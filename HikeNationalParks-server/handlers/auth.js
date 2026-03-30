@@ -1,6 +1,7 @@
 const db = require("../models");
 const jwt = require("jsonwebtoken");
 
+// POST /api/auth/login
 exports.login = async function (req, res, next) {
   try {
     let user = await db.User.findOne({ username: req.body.username });
@@ -33,6 +34,7 @@ exports.login = async function (req, res, next) {
   }
 };
 
+// POST /api/auth/register
 exports.register = async function (req, res, next) {
   try {
     let user = await db.User.create(req.body);
