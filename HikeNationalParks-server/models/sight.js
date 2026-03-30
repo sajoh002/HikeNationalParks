@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const User = require("./user");
 const NationalPark = require("./nationalPark");
+const Review = require("./review");
 
 const imageSchema = new mongoose.Schema({
   url: String,
@@ -51,12 +52,13 @@ const sightSchema = new mongoose.Schema(
 );
 
 sightSchema.pre(
-  "deleteOne",
+  "findOneAndDelete",
   { document: true, query: false },
-  async function () {
+  async function (next) {
     let nationalPark = await NationalPark.findById(this.nationalPark);
     nationalPark.sights.deleteOne(this.id);
     await nationalPark.save();
+    next();
   }
 );
 
